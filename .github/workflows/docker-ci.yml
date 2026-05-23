@@ -1,0 +1,75 @@
+name: Docker CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: lab5-todo-websocket-app
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show Docker version
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Build Docker images
+        run: |
+          docker compose build
+
+      - name: Start Docker containers
+        run: |
+          docker compose up -d
+
+      - name: Show running containers
+        run: |
+          docker ps
+
+      - name: Wait for backend
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:5000/health; then
+              echo "Backend is ready"
+              exit 0
+            fi
+            echo "Waiting for backend..."
+            sleep 3
+          done
+          echo "Backend did not start in time"
+          docker compose logs
+          exit 1
+
+      - name: Test backend root endpoint
+        run: |
+          curl -f http://localhost:5000
+
+      - name: Test frontend
+        run: |
+          curl -f http://localhost:8080
+
+      - name: Test create task API
+        run: |
+          curl -f -X POST http://localhost:5000/tasks \
+            -H "Content-Type: application/json" \
+            -d '{"title":"Task from GitHub Actions","description":"Created during CI","completed":false}'
+
+      - name: Test get tasks API
+        run: |
+          curl -f http://localhost:5000/tasks
+
+      - name: Stop Docker containers
+        if: always()
+        run: |
+          docker compose down -v
