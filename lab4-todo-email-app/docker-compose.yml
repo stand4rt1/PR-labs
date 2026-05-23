@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: lab4-postgres-db
+    environment:
+      POSTGRES_DB: todo_db
+      POSTGRES_USER: todo_user
+      POSTGRES_PASSWORD: todo_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - lab4_postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: lab4-backend
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_NAME: todo_db
+      DB_USER: todo_user
+      DB_PASSWORD: todo_password
+      DB_PORT: 5432
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      EMAIL_FROM: todo-app@example.com
+    depends_on:
+      - db
+      - mailpit
+
+  frontend:
+    build: ./frontend
+    container_name: lab4-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: lab4-mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  lab4_postgres_data:

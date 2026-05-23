@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 3 ToDo List</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>ToDo List - Laboratory Work 3</h1>
+
+    <section class="form-section">
+        <h2>Add new task</h2>
+
+        <input type="text" id="titleInput" placeholder="Task title">
+        <input type="text" id="descriptionInput" placeholder="Task description">
+
+        <button onclick="createTask()">Add Task</button>
+    </section>
+
+    <section class="form-section">
+        <h2>Email settings</h2>
+        <input type="email" id="emailInput" placeholder="Recipient email" value="student@example.com">
+    </section>
+
+    <section class="form-section">
+        <h2>Get task by ID</h2>
+
+        <input type="number" id="taskIdInput" placeholder="Task ID">
+        <button onclick="getTaskById()">Get Task</button>
+
+        <pre id="singleTaskResult"></pre>
+    </section>
+
+    <section>
+        <h2>Tasks</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Completed</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tasksTableBody"></tbody>
+        </table>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
